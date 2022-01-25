@@ -1,18 +1,18 @@
----
-POST /api/users/signup - для регистрации
-POST /api/users/login - для получения токена
-GET /api/users/current - для того, чтобы узнать текщего пользователя (необходимо добавить тип токена и сам токен в поле афторизации полученный после логина)
-GET /api/users/logout - для обнуления токена
----
+##### Для работы с пользователем(signup/login/logout)
 
-Для работы с контактами используем:
+- POST /api/users/signup - для регистрации
+- POST /api/users/login - для получения токена
+- GET /api/users/current - для того, чтобы узнать текщего пользователя (необходимо добавить тип токена и сам токен в поле афторизации полученный после логина)
+- GET /api/users/logout - для обнуления токена
 
-GET /api/contacts
-GET /api/contacts/:id
-POST /api/contacts
-DELETE /api/contacts/:id
-PUT /api/contacts/:id
-PUTCH /api/contacts/:id/favorite
+##### Для работы с контактами
+
+- GET /api/contacts
+- GET /api/contacts/:id
+- POST /api/contacts
+- DELETE /api/contacts/:id
+- PUT /api/contacts/:id
+- PUTCH /api/contacts/:id/favorite
 
 ### Команды:
 
