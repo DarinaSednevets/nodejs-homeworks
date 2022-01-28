@@ -5,8 +5,13 @@ const { BadRequest, Conflict, Unauthorized } = require("http-errors");
 const { joiRegisterSchema, joiLoginSchema } = require("../../models/user");
 const { User } = require('../../models')
 const router = express.Router();
-const { authenticate } = require('../../middlewares/index')
+const { authenticate, upload } = require('../../middlewares/index')
 const { SECRET_KEY } = process.env;
+const gravatar = require('gravatar');
+const fs = require("fs");
+const path = require("path");
+const avatarsDir = path.join(__dirname, "../../", "public", "avatars");
+const Jimp = require("jimp");
 
 router.post("/signup", async (req, res, next) => {
     try {
@@ -21,7 +26,8 @@ router.post("/signup", async (req, res, next) => {
         }
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
-        const newUser = await User.create({ name, email, password: hashPassword });
+        const avatarURL = gravatar.url(email);
+        const newUser = await User.create({ name, email, password: hashPassword, avatarURL });
         res.status(201).json({
             user: {
                 name: newUser.name,
@@ -83,5 +89,28 @@ router.get("/current", authenticate, async (req, res) => {
     })
 })
 
+router.patch("/avatars", authenticate, upload.single("avatar"), async (req, res) => {
+    console.log(req.file);
+    const { filename } = req.file;
+    const tempUpload = req.file.path;
+    const [extension] = filename.split(".").reverse();
+    const newFileName = `${req.user._id}.${extension}`;
+    console.log(avatarsDir);
+    console.log(newFileName);
+    const fileUpload = path.join(avatarsDir, newFileName);
+    console.log(fileUpload, tempUpload);
+    await fs.promises.rename(tempUpload, fileUpload);
+    Jimp.read(fileUpload)
+        .then(image => {
+            return image
+                .resize(256, 256)
+                .write(fileUpload);
+        })
+        .catch(err => {
+            console.error(err);
+        });
+    await User.findByIdAndUpdate(req.user._id, { avatarURL: fileUpload }, { new: true });
+    res.json({ avatarURL: fileUpload })
+});
 
 module.exports = router;
