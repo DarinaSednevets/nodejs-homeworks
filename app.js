@@ -11,23 +11,7 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 app.use(logger(formatsLogger))
 app.use(cors())
 app.use(express.json())
-
-function isEmpty(obj) {
-  for (const prop in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, prop)) {
-      return false;
-    }
-  }
-  return JSON.stringify(obj) === JSON.stringify({});
-}
-
-app.use((req, res, next) => {
-  if (isEmpty(req.body)) {
-    res.status(400).json({ message: "body is empty" })
-    return;
-  }
-  next();
-})
+app.use(express.static("public"))
 
 app.use("/api/users", usersRouter);
 app.use('/api/contacts', contactsRouter)

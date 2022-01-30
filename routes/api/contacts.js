@@ -90,8 +90,6 @@ router.put('/:contactId', async (req, res, next) => {
   }
 })
 
-
-
 router.patch("/:id/favorite", async (req, res, next) => {
   try {
     const { id } = req.params;
